@@ -12,7 +12,7 @@ function App() {
 
   const randomList = async () => {
     await axios.get("https://randomuser.me/api/?results=10")
-    .then(res => setList({ list: res.data.results }))
+    .then(res => setList({ ...employeeList, list: res.data.results }))
     .catch(err => console.log(err));
   } 
 
