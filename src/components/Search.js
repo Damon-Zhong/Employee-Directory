@@ -6,8 +6,6 @@ function Search( props ){
     const { name, value } = event.target;
     console.log( `[handleInputChange] name(${name}) value(${value})` )
 
-    // calling the parent updateFilter so the 'filter' property will be changed at the App level, adn then
-    // propagated down
     props.searchEmployee( value )
   }
 

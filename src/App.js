@@ -1,47 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Search from "./components/Search"
-import Datatable from "./components/Table"
-import employeeData from "./employeedata.json" 
+import DataTable from "./components/DataTable"
+// import employeeData from "./employeedata.json" 
+import axios from 'axios'
 
 function App() {
 
-  const [ employeeList, setList ]= useState( { list: employeeData, searchKey: '', orderKey: '' } )
-  // const [ nonorderList, setOrderList ] = useState ( { list: employeeData } )
+  const [ employeeList, setList ]= useState( { list: [], searchKey: '', isOrderAsc: false } )
   console.log( `[App] employeeList:`, employeeList )
+
+  const randomList = async () => {
+    await axios.get("https://randomuser.me/api/?results=10")
+    .then(res => setList({ list: res.data.results }))
+    .catch(err => console.log(err));
+  } 
+
+  useEffect(() => {
+    randomList()
+  }, []);
 
   function searchEmployee( searchKey ){
     console.log( `searching for employees: ${searchKey}` )
-    const resultList = employeeData.filter( employee => employee.name.first.toLowerCase().includes( searchKey.toLowerCase() ) || employee.name.last.toLowerCase().includes( searchKey.toLowerCase() ) )
-    setList( { ...employeeList, searchKey, list: resultList })
+    const resultList = employeeList.list.filter( employee => employee.name.first.toLowerCase().includes( searchKey.toLowerCase() ) || employee.name.last.toLowerCase().includes( searchKey.toLowerCase() ) )
+    setList( { ...employeeList, list: resultList, searchKey })
   }
 
   function orderTable( orderKey ){
     console.log( `reordering table by: ${orderKey}`)
-    let result
-    const resltList = employeeList.list.sort()
-    //   (a, b) => {
-    //   switch( orderKey ){
-    //     default:
-    //       console.log( `Order key not found!`)
-    //       break;
-    //     case "Gender":
-    //       result = a[orderKey] > b[orderKey] ? 1 : -1;
-    //       break;
-    //     case "Name":
-    //       result = a.name.first > b.name.first ? 1:-1
-    //       break;
-    //     case "Location":
-    //       result = a.location.city > b.location.city ? 1:-1
-    //       break;
-    //     case "Email":
-    //       result = a[orderKey] > b[orderKey] ? 1 : -1;
-    //       break;
-    //   }
-    //   console.log( result )
-    //   return result
-    // })
-    setList( { ...employeeList, orderKey, list: resltList })
+    let resultList
+    //If table is not ordered ascending, order the table ascending and change status to true
+    if( !employeeList.isOrderAsc ){
+      resultList = employeeList.list.sort( ( a, b ) => {
+        switch( orderKey ){
+              default:
+                return 0;
+              case "gender":
+                return a[orderKey] > b[orderKey] ? 1 : -1;
+              case "name":
+                return a.name.first > b.name.first ? 1:-1
+              case "location":
+                return a.location.city > b.location.city ? 1:-1
+              case "email":
+                return a[orderKey] > b[orderKey] ? 1 : -1;
+            }
+      })
+      setList( { ...employeeList, list: resultList, isOrderAsc: true })
+    }else{
+      resultList = employeeList.list.sort( ( a, b ) => {
+        switch( orderKey ){
+              default:
+                return 0;
+              case "gender":
+                return a[orderKey] > b[orderKey] ? -1 : 1;
+              case "name":
+                return a.name.first > b.name.first ? -1 : 1
+              case "location":
+                return a.location.city > b.location.city ? -1 : 1
+              case "email":
+                return a[orderKey] > b[orderKey] ? -1 : 1
+            }
+      })
+      setList( { ...employeeList, list: resultList, isOrderAsc: false })
+    }
   }
 
   return (
@@ -54,11 +75,7 @@ function App() {
           < Search searchKey={employeeList.searchKey} searchEmployee={searchEmployee} />
         </form>
       </div>
-      {/* <form>
-        
-        < Filter />
-      </form> */}
-        < Datatable employeeData={employeeList.list} orderTable={orderTable}/>
+        < DataTable employeeData={employeeList.list} orderTable={orderTable}/>
     </div>
   );
 }
