@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Search from "./components/Search"
@@ -28,26 +29,25 @@ function App() {
 
   function orderTable( orderKey ){
     console.log( `reordering table by: ${orderKey}`)
-    let resultList
     //If table is not ordered ascending, order the table ascending and change status to true
     if( !employeeList.isOrderAsc ){
-      resultList = employeeList.list.sort( ( a, b ) => {
+      let resultList = employeeList.list.sort( ( a, b ) => {
         switch( orderKey ){
               default:
-                return 0;
+                return employeeList.list;
               case "gender":
-                return a[orderKey] > b[orderKey] ? 1 : -1;
+                return a[orderKey] > b[orderKey] ? 1 : -1
               case "name":
                 return a.name.first > b.name.first ? 1:-1
               case "location":
                 return a.location.city > b.location.city ? 1:-1
               case "email":
-                return a[orderKey] > b[orderKey] ? 1 : -1;
+                return a[orderKey] > b[orderKey] ? 1 : -1
             }
       })
       setList( { ...employeeList, list: resultList, isOrderAsc: true })
     }else{
-      resultList = employeeList.list.sort( ( a, b ) => {
+      let resultList = employeeList.list.sort( ( a, b ) => {
         switch( orderKey ){
               default:
                 return 0;

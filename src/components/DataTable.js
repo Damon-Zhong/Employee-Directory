@@ -21,7 +21,7 @@ function DataTable( props ){
             </tr>
         </thead>
         <tbody>
-        {props.employeeData.map( (employee, idx) => <TableRow {...employee} idx={idx} />)}
+        {props.employeeData.map( (employee, idx) => <TableRow {...employee} key={idx} idx={idx+1} />)}
         </tbody>
       </table>
       
